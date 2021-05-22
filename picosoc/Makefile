@@ -2,6 +2,56 @@
 CROSS=riscv32-unknown-elf-
 CFLAGS=
 
+# ---- IceFun board ----
+
+icefunsim: icefun_tb.vvp icefun_fw.hex
+	vvp -N $< +firmware=icefun_fw.hex
+
+icefunsynsim: icefun_syn_tb.vvp icefun_fw.hex
+	vvp -N $< +firmware=icefun_fw.hex
+
+icefun.blif: icefun.v spimemio.v simpleuart.v picosoc.v ../picorv32.v
+	yosys -ql icefun.log -p 'synth_ice40 -top icefun -blif icefun.blif' $^
+
+icefun_tb.vvp: icefun_tb.v icefun.v spimemio.v simpleuart.v picosoc.v ../picorv32.v spiflash.v
+	iverilog -s testbench -o $@ $^ `yosys-config --datdir/ice40/cells_sim.v`
+
+icefun_syn_tb.vvp: icefun_tb.v icefun_syn.v spiflash.v
+	iverilog -s testbench -o $@ $^ `yosys-config --datdir/ice40/cells_sim.v`
+
+icefun_syn.v: icefun.blif
+	yosys -p 'read_blif -wideports icefun.blif; write_verilog icefun_syn.v'
+
+icefun.asc: icefun.pcf icefun.blif
+	arachne-pnr -d 8k -o icefun.asc -p icefun.pcf icefun.blif
+
+icefun.bin: icefun.asc
+	icetime -d hx8k -c 12 -mtr icefun.rpt icefun.asc
+	icepack icefun.asc icefun.bin
+
+icefunprog: icefun.bin icefun_fw.bin
+	iceprog icefun.bin
+	iceprog -o 1M icefun_fw.bin
+
+icefunprog_fw: icefun_fw.bin
+	iceprog -o 1M icefun_fw.bin
+
+icefun_sections.lds: sections.lds
+	$(CROSS)cpp -P -DHX8KDEMO -o $@ $^
+
+icefun_fw.elf: icefun_sections.lds start.s firmware.c
+	$(CROSS)gcc $(CFLAGS) -DHX8KDEMO -march=rv32imc -Wl,-Bstatic,-T,icefun_sections.lds,--strip-debug -ffreestanding -nostdlib -o icefun_fw.elf start.s firmware.c
+
+icefun_fw.asm: icefun_sections.lds start.s firmware.c
+	$(CROSS)gcc $(CFLAGS) -DHX8KDEMO -S -march=rv32imc -Wl,-Bstatic,-T,icefun_sections.lds,--strip-debug -ffreestanding -nostdlib -o icefun_fw.asm firmware.c
+
+icefun_fw.hex: icefun_fw.elf
+	$(CROSS)objcopy -O verilog icefun_fw.elf icefun_fw.hex
+
+icefun_fw.bin: icefun_fw.elf
+	$(CROSS)objcopy -O binary icefun_fw.elf icefun_fw.bin
+
+
 # ---- iCE40 HX8K Breakout Board ----
 
 hx8ksim: hx8kdemo_tb.vvp hx8kdemo_fw.hex
@@ -40,7 +90,7 @@ hx8kdemo_sections.lds: sections.lds
 	$(CROSS)cpp -P -DHX8KDEMO -o $@ $^
 
 hx8kdemo_fw.elf: hx8kdemo_sections.lds start.s firmware.c
-	$(CROSS)gcc $(CFLAGS) -DHX8KDEMO -march=rv32imc -Wl,-Bstatic,-T,hx8kdemo_sections.lds,--strip-debug -ffreestanding -nostdlib -o hx8kdemo_fw.elf start.s firmware.c
+	$(CROSS)gcc $(CFLAGS) -DHX8KDEMO -S -march=rv32imc -Wl,-Bstatic,-T,hx8kdemo_sections.lds,--strip-debug -ffreestanding -nostdlib -o hx8kdemo_fw.elf start.s firmware.c
 
 hx8kdemo_fw.hex: hx8kdemo_fw.elf
 	$(CROSS)objcopy -O verilog hx8kdemo_fw.elf hx8kdemo_fw.hex
