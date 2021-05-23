@@ -10,8 +10,11 @@ icefunsim: icefun_tb.vvp icefun_fw.hex
 icefunsynsim: icefun_syn_tb.vvp icefun_fw.hex
 	vvp -N $< +firmware=icefun_fw.hex
 
-icefun.blif: icefun.v spimemio.v simpleuart.v picosoc.v ../picorv32.v
-	yosys -ql icefun.log -p 'synth_ice40 -top icefun -blif icefun.blif' $^
+#icefun.blif: icefun.v spimemio.v simpleuart.v picosoc.v ../picorv32.v
+#	yosys -ql icefun.log -p 'synth_ice40 -top icefun -blif icefun.blif' $^
+
+icefun.json: icefun.v spimemio.v simpleuart.v picosoc.v ../picorv32.v
+	yosys -ql icefun.log -p 'synth_ice40 -top icefun -json icefun.json' $^
 
 icefun_tb.vvp: icefun_tb.v icefun.v spimemio.v simpleuart.v picosoc.v ../picorv32.v spiflash.v
 	iverilog -s testbench -o $@ $^ `yosys-config --datdir/ice40/cells_sim.v`
@@ -22,8 +25,9 @@ icefun_syn_tb.vvp: icefun_tb.v icefun_syn.v spiflash.v
 icefun_syn.v: icefun.blif
 	yosys -p 'read_blif -wideports icefun.blif; write_verilog icefun_syn.v'
 
-icefun.asc: icefun.pcf icefun.blif
-	arachne-pnr -d 8k -o icefun.asc -p icefun.pcf icefun.blif
+icefun.asc: icefun.pcf icefun.json
+	#arachne-pnr -d 8k -o icefun.asc -p icefun.pcf icefun.blif
+	nextpnr-ice40 -r --hx8k --json icefun.json --package cb132 --asc icefun.asc --opt-timing --pcf icefun.pcf
 
 icefun.bin: icefun.asc
 	icetime -d hx8k -c 12 -mtr icefun.rpt icefun.asc
