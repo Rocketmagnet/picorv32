@@ -671,7 +671,7 @@ void TestLEDs()
 
 	while(1)
 	{
-		reg_leds = 0x0F00 | ((i>>16) & 0x00FF);
+		reg_leds = 0x0A00 | ((i>>16) & 0x00FF);
 		i++;
 	}
 

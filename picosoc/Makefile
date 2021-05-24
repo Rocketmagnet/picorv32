@@ -33,30 +33,49 @@ icefun.bin: icefun.asc
 	icetime -d hx8k -c 12 -mtr icefun.rpt icefun.asc
 	icepack icefun.asc icefun.bin
 
-icefunprog: icefun.bin icefun_fw.bin
-	iceprog icefun.bin
-	iceprog -o 1M icefun_fw.bin
-
-icefunprog_fw: icefun_fw.bin
-	iceprog -o 1M icefun_fw.bin
-
 icefun_sections.lds: sections.lds
-	$(CROSS)cpp -P -DHX8KDEMO -o $@ $^
+	$(CROSS)cpp -P -DICEFUN -o $@ $^
+
+#icefunprog: icefun.bin icefun_fw.bin
+#	iceFUNprog icefun.bin
+#	iceFUNprog -o 1M icefun_fw.bin
+
+#icefunprog_fw: icefun_fw.bin
+#	iceFUNprog -o 1M icefun_fw.bin
+
+
+# Firmware: Original
+#-------------------
 
 icefun_fw.elf: icefun_sections.lds start.s firmware.c
 	$(CROSS)gcc $(CFLAGS) -DICEFUN -march=rv32imc -Wl,-Bstatic,-T,icefun_sections.lds,--strip-debug -ffreestanding -nostdlib -o icefun_fw.elf start.s firmware.c
 
-icefun_leds.elf: icefun_sections.lds start.s firmware_leds.c
-	$(CROSS)gcc $(CFLAGS) -DICEFUN -march=rv32imc -Wl,-Bstatic,-T,icefun_sections.lds,--strip-debug -ffreestanding -nostdlib -o icefun_fw.elf start.s firmware.c
+icefun_fw.bin: icefun_fw.elf
+	$(CROSS)objcopy -O binary icefun_fw.elf icefun_fw.bin
 
 icefun_fw.asm: icefun_sections.lds start.s firmware.c
 	$(CROSS)gcc $(CFLAGS) -DICEFUN -S -march=rv32imc -Wl,-Bstatic,-T,icefun_sections.lds,--strip-debug -ffreestanding -nostdlib -o icefun_fw.asm firmware.c
 
-icefun_fw.hex: icefun_fw.elf
-	$(CROSS)objcopy -O verilog icefun_fw.elf icefun_fw.hex
+icefunprog: icefun.bin icefun_fw.bin
+	iceFUNprog -P /dev/ttyACM0 icefun.bin
+	iceFUNprog -P /dev/ttyACM0 -o 256k icefun_fw.bin
 
-icefun_fw.bin: icefun_fw.elf
-	$(CROSS)objcopy -O binary icefun_fw.elf icefun_fw.bin
+
+#Firmware: LEDs
+#--------------
+
+icefun_leds.elf: icefun_sections.lds start.s firmware_leds.c
+	$(CROSS)gcc $(CFLAGS) -DICEFUN -march=rv32imc -Wl,-Bstatic,-T,icefun_sections.lds,--strip-debug -ffreestanding -nostdlib -o icefun_leds.elf start.s firmware_leds.c
+
+icefun_leds.hex: icefun_leds.elf
+	$(CROSS)objcopy -O verilog icefun_leds.elf icefun_leds.hex
+
+icefun_leds.bin: icefun_leds.elf
+	$(CROSS)objcopy -O binary icefun_leds.elf icefun_leds.bin
+
+icefunprog_leds: icefun.bin icefun_leds.bin
+	iceFUNprog -P /dev/ttyACM0 icefun.bin
+	iceFUNprog -P /dev/ttyACM0 -o 256k icefun_leds.bin
 
 
 # ---- iCE40 HX8K Breakout Board ----

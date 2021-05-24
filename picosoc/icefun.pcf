@@ -19,7 +19,9 @@ set_io ser_rx K3
 set_io debug_ser_tx M3
 set_io debug_ser_rx G1
 
-# right on J3
+# These are just used for connecting a logic analyser
+# so that we can see what the CPU is reading out of
+# FLASH while it runs.
 set_io debug_flash_csb B1
 set_io debug_flash_clk C1
 set_io debug_flash_io0 D1
@@ -27,12 +29,17 @@ set_io debug_flash_io1 E1
 set_io debug_flash_io2 F3
 set_io debug_flash_io3 G3
 
-set_io leds[7] C10  # D9
-set_io leds[6] A10  # D8
-set_io leds[5] D7  # D7
-set_io leds[4] D6  # D6
-set_io leds[3] A7  # D5
-set_io leds[2] C7  # D4
-set_io leds[1] A4  # D3
-set_io leds[0] C4  # D2
+set_io leds[7] C10
+set_io leds[6] A10
+set_io leds[5] D7
+set_io leds[4] D6
+set_io leds[3] A7
+set_io leds[2] C7
+set_io leds[1] A4
+set_io leds[0] C4
+
+set_io drv[3] C5
+set_io drv[2] A6
+set_io drv[1] D10
+set_io drv[0] A12
 

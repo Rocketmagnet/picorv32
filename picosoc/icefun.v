@@ -24,6 +24,7 @@ module icefun (
 	input ser_rx,
 
 	output [7:0] leds,
+	output [3:0] drv,
 
 	output flash_csb,
 	output flash_clk,
