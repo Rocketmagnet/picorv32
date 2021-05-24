@@ -72,8 +72,9 @@ module icefun (
 	reg  [31:0] iomem_rdata;
 
 	reg [31:0] gpio;
-	assign leds = gpio;
-
+	assign leds[7:0] = gpio[7:0];
+	assign  drv[3:0] = gpio[11:8];
+ 
 	always @(posedge clk) begin
 		if (!resetn) begin
 			gpio <= 0;

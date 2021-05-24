@@ -44,10 +44,13 @@ icefun_sections.lds: sections.lds
 	$(CROSS)cpp -P -DHX8KDEMO -o $@ $^
 
 icefun_fw.elf: icefun_sections.lds start.s firmware.c
-	$(CROSS)gcc $(CFLAGS) -DHX8KDEMO -march=rv32imc -Wl,-Bstatic,-T,icefun_sections.lds,--strip-debug -ffreestanding -nostdlib -o icefun_fw.elf start.s firmware.c
+	$(CROSS)gcc $(CFLAGS) -DICEFUN -march=rv32imc -Wl,-Bstatic,-T,icefun_sections.lds,--strip-debug -ffreestanding -nostdlib -o icefun_fw.elf start.s firmware.c
+
+icefun_leds.elf: icefun_sections.lds start.s firmware_leds.c
+	$(CROSS)gcc $(CFLAGS) -DICEFUN -march=rv32imc -Wl,-Bstatic,-T,icefun_sections.lds,--strip-debug -ffreestanding -nostdlib -o icefun_fw.elf start.s firmware.c
 
 icefun_fw.asm: icefun_sections.lds start.s firmware.c
-	$(CROSS)gcc $(CFLAGS) -DHX8KDEMO -S -march=rv32imc -Wl,-Bstatic,-T,icefun_sections.lds,--strip-debug -ffreestanding -nostdlib -o icefun_fw.asm firmware.c
+	$(CROSS)gcc $(CFLAGS) -DICEFUN -S -march=rv32imc -Wl,-Bstatic,-T,icefun_sections.lds,--strip-debug -ffreestanding -nostdlib -o icefun_fw.asm firmware.c
 
 icefun_fw.hex: icefun_fw.elf
 	$(CROSS)objcopy -O verilog icefun_fw.elf icefun_fw.hex
