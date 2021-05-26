@@ -3,17 +3,25 @@
 
 set_io clk P7
 
-set_io flash_csb P13
-set_io flash_clk P12
-# MOSI
-set_io flash_io0 M11
-set_io flash_io1 P11
-set_io flash_io2 A3
-set_io flash_io3 A2
+set_io flash_csb P13  # CS
+set_io flash_clk P12  # CLK
+set_io flash_io0 M11  # MOSI
+set_io flash_io1 P11  # SOMI (MISO)
+set_io flash_io2 A3   # unused on IceFun
+set_io flash_io3 A2   # unused on IceFun
+
 
 
 set_io ser_tx J3
 set_io ser_rx K3
+
+set_io piezo[1] M6
+set_io piezo[0] M12
+
+set_io buttons[0] A5
+set_io buttons[1] A11
+set_io buttons[2] C6
+set_io buttons[3] C11
 
 # left on J3
 set_io debug_ser_tx M3

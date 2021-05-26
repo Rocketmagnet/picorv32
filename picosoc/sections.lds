@@ -2,7 +2,7 @@
 
 MEMORY
 {
-    FLASH (rx)      : ORIGIN = 0x00100000, LENGTH = 0x400000 /* entire flash, 4 MiB */
+    FLASH (rx)      : ORIGIN = 0x00100000, LENGTH = 0x00400000 /* entire flash, 4 MiB */
     RAM (xrw)       : ORIGIN = 0x00000000, LENGTH = 0x00020000
 }
 
@@ -10,7 +10,7 @@ MEMORY
 
 MEMORY
 {
-    FLASH (rx)      : ORIGIN = 0x00100000, LENGTH = 0x400000 /* entire flash, 4 MiB */
+    FLASH (rx)      : ORIGIN = 0x00100000, LENGTH = 0x00400000 /* entire flash, 4 MiB */
     RAM (xrw)       : ORIGIN = 0x00000000, LENGTH = 0x00000200
 }
 
@@ -18,7 +18,7 @@ MEMORY
 
 MEMORY
 {
-    FLASH (rx)      : ORIGIN = 0x00040000, LENGTH = 0x40000 /* entire flash, 1 MiB */
+    FLASH (rx)      : ORIGIN = 0x00080000, LENGTH = 0x00100000 /* entire flash, 1 MiB */
     RAM (xrw)       : ORIGIN = 0x00000000, LENGTH = 0x00000200
 }
 

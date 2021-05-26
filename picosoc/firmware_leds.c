@@ -671,13 +671,52 @@ void TestLEDs()
 
 	while(1)
 	{
-		reg_leds = 0x0A00 | ((i>>16) & 0x00FF);
+		reg_leds = 0x0A00 | ((i>>8) & 0x00FF);
 		i++;
+	}
+
+}
+
+int Delay(int d)
+{
+	int x = 5;
+	int i;
+
+	for (i=0; i<d; i++)
+	{
+		x *= i;
+	}
+	return x;
+}
+
+void TestLEDs_2()
+{
+	int x, y = 0, d=1;
+
+	while(1)
+	{
+		for (x=0; x<4; x++)
+		{
+			reg_leds = (0x0F00 ^ (0x0100 << x)) | (0x00FF ^ (0x0001 << y));
+			Delay(2000);
+		}
+		y += d;
+		if (y>=7) d=-1;
+		if (y<=0) d= 1;
+		for (x=3; x>=0; x--)
+		{
+			reg_leds = (0x0F00 ^ (0x0100 << x)) | (0x00FF ^ (0x0001 << y));
+			Delay(2000);
+		}
+		y += d;
+		if (y>=7) d=-1;
+		if (y<=0) d= 1;
 	}
 
 }
 
 void main()
 {
-	TestLEDs();
+	TestLEDs_2();
+	//TestLEDs();
 }

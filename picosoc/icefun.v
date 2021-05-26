@@ -23,6 +23,7 @@ module icefun (
 	output ser_tx,
 	input ser_rx,
 
+	input  [3:0] buttons,
 	output [7:0] leds,
 	output [3:0] drv,
 
@@ -41,8 +42,11 @@ module icefun (
 	output debug_flash_io0,
 	output debug_flash_io1,
 	output debug_flash_io2,
-	output debug_flash_io3
+	output debug_flash_io3,
+
+	output [1:0] piezo
 );
+
 	reg [5:0] reset_cnt = 0;
 	wire resetn = &reset_cnt;
 
@@ -72,14 +76,19 @@ module icefun (
 	wire [31:0] iomem_wdata;
 	reg  [31:0] iomem_rdata;
 
+        reg [15:0] piezoCounter;
 	reg [31:0] gpio;
 	assign leds[7:0] = gpio[7:0];
 	assign  drv[3:0] = gpio[11:8];
- 
+ 	assign piezo[0]  = ~piezo[1];
+ 	assign piezo[1]  = piezoCounter[13] | buttons[0];
+
 	always @(posedge clk) begin
 		if (!resetn) begin
 			gpio <= 0;
+			piezoCounter <= 0;
 		end else begin
+			piezoCounter <= piezoCounter+1;
 			iomem_ready <= 0;
 			if (iomem_valid && !iomem_ready && iomem_addr[31:24] == 8'h 03) begin
 				iomem_ready <= 1;
