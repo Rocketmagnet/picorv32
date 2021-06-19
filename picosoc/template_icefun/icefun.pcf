@@ -1,0 +1,53 @@
+
+# Pinout for the iCE40-HX8K Breakout Board
+
+set_io clk P7
+
+set_io flash_csb P13  # CS
+set_io flash_clk P12  # CLK
+set_io flash_io0 M11  # MOSI
+set_io flash_io1 P11  # SOMI (MISO)
+set_io flash_io2 A3   # unused on IceFun
+set_io flash_io3 A2   # unused on IceFun
+
+
+
+set_io ser_tx J3
+set_io ser_rx K3
+
+set_io piezo[1] M6
+set_io piezo[0] M12
+
+set_io buttons[0] A5
+set_io buttons[1] A11
+set_io buttons[2] C6
+set_io buttons[3] C11
+
+# left on J3
+set_io debug_ser_tx M3
+set_io debug_ser_rx G1
+
+# These are just used for connecting a logic analyser
+# so that we can see what the CPU is reading out of
+# FLASH while it runs.
+set_io debug_flash_0 B1
+set_io debug_flash_1 C1
+set_io debug_flash_2 D1
+set_io debug_flash_3 E1
+set_io debug_flash_4 F3
+set_io debug_flash_5 G3
+
+set_io leds[7] C10
+set_io leds[6] A10
+set_io leds[5] D7
+set_io leds[4] D6
+set_io leds[3] A7
+set_io leds[2] C7
+set_io leds[1] A4
+set_io leds[0] C4
+
+set_io drv[3] C5
+set_io drv[2] A6
+set_io drv[1] D10
+set_io drv[0] A12
+
